@@ -1,7 +1,10 @@
-﻿namespace GymManagement.Application.Common.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace GymManagement.Application.Common.Models;
 
 public class Result<T> : Result
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public T? Data { get; set; }
 
     public static Result<T> Success(T data, string message = "Operation completed successfully")
