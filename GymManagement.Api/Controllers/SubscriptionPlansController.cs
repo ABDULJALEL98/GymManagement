@@ -1,9 +1,11 @@
 ﻿using GymManagement.Application.Features.SubscriptionPlans.Commands.CreateSubscriptionPlan;
-using GymManagement.Application.Features.SubscriptionPlans.Queries.GetAllSubscriptionPlans;
-using GymManagement.Application.Features.SubscriptionPlans.Queries.GetSubscriptionPlanById;
-using MediatR;
 using GymManagement.Application.Features.SubscriptionPlans.Commands.DeleteSubscriptionPlan;
 using GymManagement.Application.Features.SubscriptionPlans.Commands.UpdateSubscriptionPlan;
+using GymManagement.Application.Features.SubscriptionPlans.Queries.GetAllSubscriptionPlans;
+using GymManagement.Application.Features.SubscriptionPlans.Queries.GetSubscriptionPlanById;
+using GymManagement.Domain.Constants;
+using GymManagement.Infrastructure.Authorization;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagement.Api.Controllers;
@@ -20,6 +22,7 @@ public class SubscriptionPlansController : ControllerBase
     }
 
     [HttpGet]
+    [HasPermission(Permissions.SubscriptionPlans.View)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(
@@ -30,6 +33,7 @@ public class SubscriptionPlansController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [HasPermission(Permissions.SubscriptionPlans.View)]
     public async Task<IActionResult> GetById(
         Guid id,
         CancellationToken cancellationToken)
@@ -47,6 +51,7 @@ public class SubscriptionPlansController : ControllerBase
     }
 
     [HttpPost]
+    [HasPermission(Permissions.SubscriptionPlans.Create)]
     public async Task<IActionResult> Create(
         [FromBody] CreateSubscriptionPlanCommand command,
         CancellationToken cancellationToken)
@@ -63,11 +68,13 @@ public class SubscriptionPlansController : ControllerBase
             new { id = result.Data },
             result);
     }
+
     [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.SubscriptionPlans.Update)]
     public async Task<IActionResult> Update(
-    Guid id,
-    [FromBody] UpdateSubscriptionPlanCommand command,
-    CancellationToken cancellationToken)
+        Guid id,
+        [FromBody] UpdateSubscriptionPlanCommand command,
+        CancellationToken cancellationToken)
     {
         if (id != command.Id)
         {
@@ -85,6 +92,7 @@ public class SubscriptionPlansController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.SubscriptionPlans.Delete)]
     public async Task<IActionResult> Delete(
         Guid id,
         CancellationToken cancellationToken)

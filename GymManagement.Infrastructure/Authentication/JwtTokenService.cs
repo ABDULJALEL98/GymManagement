@@ -14,13 +14,16 @@ public class JwtTokenService : IJwtTokenService
 {
     private readonly JwtSettings _jwtSettings;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
     public JwtTokenService(
         IOptions<JwtSettings> jwtOptions,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
         _jwtSettings = jwtOptions.Value;
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<string> GenerateTokenAsync(ApplicationUser user)
@@ -39,6 +42,21 @@ public class JwtTokenService : IJwtTokenService
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var identityRole = await _roleManager.FindByNameAsync(role);
+
+            if (identityRole is null)
+            {
+                continue;
+            }
+
+            var roleClaims = await _roleManager.GetClaimsAsync(identityRole);
+
+            var permissionClaims = roleClaims
+                .Where(x => x.Type == "Permission")
+                .ToList();
+
+            claims.AddRange(permissionClaims);
         }
 
         var key = new SymmetricSecurityKey(
