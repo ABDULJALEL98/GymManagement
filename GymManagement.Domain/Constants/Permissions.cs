@@ -33,6 +33,13 @@ public static class Permissions
         public const string Update = "Permissions.Bookings.Update";
         public const string Delete = "Permissions.Bookings.Delete";
     }
+    public static class GymClasses
+    {
+        public const string View = "Permissions.GymClasses.View";
+        public const string Create = "Permissions.GymClasses.Create";
+        public const string Update = "Permissions.GymClasses.Update";
+        public const string Delete = "Permissions.GymClasses.Delete";
+    }
 
     public static class Payments
     {

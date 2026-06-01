@@ -5,6 +5,7 @@ namespace GymManagement.Application.Interfaces;
 
 public interface IGenericRepository<T> where T : AuditableEntity
 {
+    IQueryable<T> Query();
     Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default);

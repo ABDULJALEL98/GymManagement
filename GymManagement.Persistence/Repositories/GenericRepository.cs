@@ -16,7 +16,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : AuditableEnt
         _context = context;
         _dbSet = context.Set<T>();
     }
-
+    public IQueryable<T> Query()
+    {
+        return _dbSet.AsQueryable();
+    }
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -59,4 +62,6 @@ public class GenericRepository<T> : IGenericRepository<T> where T : AuditableEnt
         entity.IsDeleted = true;
         _dbSet.Update(entity);
     }
+
+   
 }
