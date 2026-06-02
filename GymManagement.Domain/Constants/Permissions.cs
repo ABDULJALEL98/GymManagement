@@ -9,7 +9,13 @@ public static class Permissions
         public const string Update = "Permissions.SubscriptionPlans.Update";
         public const string Delete = "Permissions.SubscriptionPlans.Delete";
     }
-
+    public static class Subscriptions
+    {
+        public const string View = "Permissions.Subscriptions.View";
+        public const string Create = "Permissions.Subscriptions.Create";
+        public const string Update = "Permissions.Subscriptions.Update";
+        public const string Delete = "Permissions.Subscriptions.Delete";
+    }
     public static class Members
     {
         public const string View = "Permissions.Members.View";
