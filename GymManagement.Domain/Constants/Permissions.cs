@@ -2,6 +2,10 @@
 
 public static class Permissions
 {
+    public static class Dashboard
+    {
+        public const string View = "Permissions.Dashboard.View";
+    }
     public static class SubscriptionPlans
     {
         public const string View = "Permissions.SubscriptionPlans.View";
