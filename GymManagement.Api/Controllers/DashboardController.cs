@@ -16,6 +16,7 @@ public class DashboardController : ControllerBase
     {
         _mediator = mediator;
     }
+   
 
     [HttpGet("stats")]
     [HasPermission(Permissions.Dashboard.View)]

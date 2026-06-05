@@ -1,4 +1,5 @@
-using System.Text;
+using GymManagement.Api.Middlewares;
+using GymManagement.Api.Models;
 using GymManagement.Application;
 using GymManagement.Application.Settings;
 using GymManagement.Infrastructure;
@@ -7,11 +8,33 @@ using GymManagement.Persistence.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(x => x.Value?.Errors.Count > 0)
+            .SelectMany(x => x.Value!.Errors)
+            .Select(x => x.ErrorMessage)
+            .ToList();
+
+        var response = new ErrorResponse
+        {
+            Message = "Validation failed",
+            Errors = errors
+        };
+
+        return new BadRequestObjectResult(response);
+    };
+});
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -95,6 +118,51 @@ builder.Services
 
             ClockSkew = TimeSpan.Zero
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var response = new ErrorResponse
+                {
+                    Message = "Unauthorized"
+                };
+
+                response.Errors.Add("You are not authenticated");
+
+                var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+
+                await context.Response.WriteAsync(json);
+            },
+
+            OnForbidden = async context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+
+                var response = new ErrorResponse
+                {
+                    Message = "Forbidden"
+                };
+
+                response.Errors.Add("You do not have permission to access this resource");
+
+                var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+
+                await context.Response.WriteAsync(json);
+            }
+        };
     });
 
 // Authorization
@@ -118,6 +186,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 var app = builder.Build();
 
 // Swagger Middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
