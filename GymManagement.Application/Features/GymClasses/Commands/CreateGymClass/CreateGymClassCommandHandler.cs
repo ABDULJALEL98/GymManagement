@@ -32,6 +32,18 @@ public class CreateGymClassCommandHandler : IRequestHandler<CreateGymClassComman
             return Result<Guid>.Failure("Trainer is not active");
         }
 
+        var hasScheduleConflict = await _unitOfWork.GymClasses.AnyAsync(
+            x => x.TrainerId == request.TrainerId
+                 && x.IsActive
+                 && request.StartTime < x.EndTime
+                 && request.EndTime > x.StartTime,
+            cancellationToken);
+
+        if (hasScheduleConflict)
+        {
+            return Result<Guid>.Failure("Trainer already has another class in this time range");
+        }
+
         var gymClass = new GymClass
         {
             Name = request.Name,

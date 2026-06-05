@@ -24,11 +24,11 @@ public class BookingsController : ControllerBase
 
     [HttpGet]
     [HasPermission(Permissions.Bookings.View)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+    [FromQuery] GetAllBookingsQuery query,
+    CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(
-            new GetAllBookingsQuery(),
-            cancellationToken);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }

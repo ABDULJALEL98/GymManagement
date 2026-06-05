@@ -24,11 +24,11 @@ public class SubscriptionsController : ControllerBase
 
     [HttpGet]
     [HasPermission(Permissions.Subscriptions.View)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+    [FromQuery] GetAllSubscriptionsQuery query,
+    CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(
-            new GetAllSubscriptionsQuery(),
-            cancellationToken);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }

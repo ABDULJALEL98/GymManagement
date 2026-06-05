@@ -24,11 +24,11 @@ public class PaymentsController : ControllerBase
 
     [HttpGet]
     [HasPermission(Permissions.Payments.View)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+     [FromQuery] GetAllPaymentsQuery query,
+     CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(
-            new GetAllPaymentsQuery(),
-            cancellationToken);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }

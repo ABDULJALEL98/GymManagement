@@ -20,14 +20,13 @@ public class GymClassesController : ControllerBase
     {
         _mediator = mediator;
     }
-
     [HttpGet]
     [HasPermission(Permissions.GymClasses.View)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] GetAllGymClassesQuery query,
+        CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(
-            new GetAllGymClassesQuery(),
-            cancellationToken);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }

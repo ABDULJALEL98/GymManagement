@@ -20,14 +20,13 @@ public class TrainersController : ControllerBase
     {
         _mediator = mediator;
     }
-
     [HttpGet]
     [HasPermission(Permissions.Trainers.View)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] GetAllTrainersQuery query,
+        CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(
-            new GetAllTrainersQuery(),
-            cancellationToken);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }

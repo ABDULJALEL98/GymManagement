@@ -23,9 +23,11 @@ public class MembersController : ControllerBase
 
     [HttpGet]
     [HasPermission(Permissions.Members.View)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+     [FromQuery] GetAllMembersQuery query,
+     CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetAllMembersQuery(), cancellationToken);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }
