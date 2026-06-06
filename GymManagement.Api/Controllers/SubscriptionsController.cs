@@ -7,6 +7,7 @@ using GymManagement.Domain.Constants;
 using GymManagement.Domain.Enums;
 using GymManagement.Infrastructure.Authorization;
 using MediatR;
+using GymManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagement.Api.Controllers;
@@ -16,10 +17,14 @@ namespace GymManagement.Api.Controllers;
 public class SubscriptionsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ISubscriptionExpirationService _subscriptionExpirationService;
 
-    public SubscriptionsController(IMediator mediator)
+    public SubscriptionsController(
+        IMediator mediator,
+        ISubscriptionExpirationService subscriptionExpirationService)
     {
         _mediator = mediator;
+        _subscriptionExpirationService = subscriptionExpirationService;
     }
 
     [HttpGet]
@@ -31,6 +36,20 @@ public class SubscriptionsController : ControllerBase
         var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
+    }
+    [HttpPost("expire-overdue")]
+    [HasPermission(Permissions.Subscriptions.Expire)]
+    public async Task<IActionResult> ExpireOverdueSubscriptions(
+    CancellationToken cancellationToken)
+    {
+        var expiredCount = await _subscriptionExpirationService
+            .ExpireSubscriptionsAsync(cancellationToken);
+
+        return Ok(new
+        {
+            Message = "Expired subscriptions processed successfully",
+            ExpiredCount = expiredCount
+        });
     }
 
     [HttpGet("{id:guid}")]

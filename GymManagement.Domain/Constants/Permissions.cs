@@ -19,6 +19,7 @@ public static class Permissions
         public const string Create = "Permissions.Subscriptions.Create";
         public const string Update = "Permissions.Subscriptions.Update";
         public const string Delete = "Permissions.Subscriptions.Delete";
+        public const string Expire = "Permissions.Subscriptions.Expire";
     }
     public static class Members
     {

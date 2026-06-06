@@ -1,6 +1,7 @@
 ﻿using GymManagement.Application.Interfaces;
 using GymManagement.Infrastructure.Authentication;
 using GymManagement.Infrastructure.Authorization;
+using GymManagement.Infrastructure.BackgroundJobs;
 using GymManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,9 @@ public static class DependencyInjection
 
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddScoped<ISubscriptionExpirationService, SubscriptionExpirationService>();
+
+        services.AddHostedService<SubscriptionExpirationBackgroundService>();
 
         return services;
     }
