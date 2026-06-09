@@ -5,6 +5,7 @@ using GymManagement.Infrastructure.BackgroundJobs;
 using GymManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using GymManagement.Infrastructure.Exports;
 
 namespace GymManagement.Infrastructure;
 
@@ -15,7 +16,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
-
+        services.AddScoped<IExcelExportService, ExcelExportService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
 
